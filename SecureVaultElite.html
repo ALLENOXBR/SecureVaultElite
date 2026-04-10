@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SecureVault | Elite Enterprise Grade (High-Density)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. THE INNOVATION PALETTE & THEMATIC LOGIC (HIGH-DENSITY)
+           ========================================================================== */
+        :root {
+            --bg: #343838;
+            --card: #222525;
+            --input-bg: #141616;
+            --border: #4b5563;
+            
+            --accent: #ff6600;         
+            --accent-action: #ff9500;  
+            --accent-flow: #00f2ff;    
+            --accent-aux: #aedd2b;     
+            --accent-glow: rgba(255, 102, 0, 0.15);
+            
+            --text: #ffffff;
+            --text-dim: #9ca3af;
+            --danger: #ef4444;
+            --success: #22c55e;
+
+            /* Sombra reduzida de 4px para 3px para a escala compacta */
+            --hardware-shadow: 0 3px 0px 0px #111111;
+            --hardware-shadow-active: 0 0px 0px 0px transparent;
+        }
+
+        .light-theme {
+            /* Tema Claro "Soft Industrial" (Não cansa a vista) */
+            --bg: #f4f4f5; 
+            --card: #ffffff; 
+            --input-bg: #f4f4f5; 
+            --border: #d4d4d8;
+            
+            --accent: #f97316; 
+            --accent-action: #ea580c; 
+            --accent-flow: #0284c7; 
+            --accent-aux: #65a30d; 
+            --accent-glow: rgba(249, 115, 22, 0.08);
+            
+            --text: #27272a; 
+            --text-dim: #71717a;
+            
+            --hardware-shadow: 0 3px 0px 0px #a1a1aa;
+            --hardware-shadow-active: 0 0px 0px 0px transparent;
+        }
+
+        * { transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            font-size: 12px; /* Redução Base (era 13px) */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, th, .uppercase { font-weight: 900 !important; }
+
+        /* Dados Técnicos reduzidos para 13px (era 16px) mantendo clareza */
+        #mainPass, #mainConfirmPass, input[type="password"], #genPassField, textarea#snNoteContent, .tech-data {
+            font-family: 'JetBrains Mono', monospace !important;
+            font-size: 13px !important;
+            letter-spacing: 0px !important;
+        }
+
+        .rounded-xl, .rounded-2xl, .rounded-\\[1\\.5rem\\] { border-radius: 4px !important; }
+
+        .glass-card {
+            background: var(--card) !important;
+            box-shadow: var(--hardware-shadow) !important;
+            border-radius: 4px !important;
+            border: 2px solid var(--border);
+            backdrop-filter: none !important;
+        }
+        
+        header.glass-card { border-top: none; border-left: none; border-right: none; }
+        footer.glass-card { border-bottom: none; border-left: none; border-right: none; }
+
+        /* Borda superior dos modais reduzida de 8px para 6px */
+        #authOverlay > div, #addAccountModal > div, #passwordModal > div, #customModal > div {
+            border: 2px solid var(--border) !important;
+            border-top: 6px solid var(--accent-action) !important;
+        }
+
+        /* Inputs mais compactos */
+        .smart-input {
+            background: var(--input-bg) !important;
+            border: 2px solid var(--border) !important;
+            border-radius: 4px !important;
+            color: var(--text) !important;
+            padding: 6px 10px;
+            font-size: 11.5px;
+            font-weight: 600;
+            transition: border-color 0.15s ease;
+            outline: none;
+        }
+
+        .smart-input:focus { border-color: var(--accent-flow) !important; box-shadow: none !important; }
+
+        /* Botões mais compactos */
+        .btn-smart {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 900 !important;
+            border-radius: 4px !important;
+            border: 2px solid var(--border) !important;
+            box-shadow: var(--hardware-shadow) !important;
+            transition: transform 0.1s, box-shadow 0.1s !important;
+            text-transform: uppercase;
+            background: var(--card);
+            color: var(--text);
+            cursor: pointer;
+            padding: 6px 12px;
+            font-size: 10.5px;
+        }
+        
+        .btn-smart:active { transform: translateY(3px) !important; box-shadow: var(--hardware-shadow-active) !important; }
+
+        .btn-main { border-color: var(--accent-action) !important; color: var(--accent-action) !important; }
+        .btn-ghost { border-color: var(--accent-flow) !important; color: var(--accent-flow) !important; }
+        .btn-outline { border-color: var(--accent-aux) !important; color: var(--accent-aux) !important; }
+
+        .bg-orange-500 { background-color: var(--accent) !important; }
+        .text-orange-500 { color: var(--accent) !important; }
+        .text-red-500 { color: var(--danger) !important; }
+        .bg-slate-800, .bg-slate-900 { background-color: var(--input-bg) !important; }
+
+        /* Tabela de Credenciais em Alta Densidade */
+        .table-wrapper { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+        .table-pro th { background: var(--input-bg) !important; color: var(--text-dim) !important; border-bottom: 2px solid var(--border) !important; font-size: 8.5px; padding: 8px 12px; }
+        .table-pro td { border-bottom: 1.5px solid var(--border) !important; padding: 5px 12px; }
+        
+        tr.selected { background: var(--accent-glow) !important; }
+        tr.selected td:first-child { border-left: 4px solid var(--accent) !important; }
+        tr:not(.selected):hover { background-color: rgba(255,255,255,0.02); }
+        .pass-container { background: transparent !important; border: none !important; }
+        .strength-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.05); overflow: hidden; width: 40px; }
+
+        #notesDrawer { border-left: 2px solid var(--border) !important; box-shadow: var(--hardware-shadow) !important; }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .mobile-hide { display: none; }
+            .mobile-scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 0.5rem; padding: 10px; border-radius: 4px !important; background: var(--card); border: 2px solid var(--border) !important; }
+            td { display: flex; justify-content: space-between; align-items: center; padding: 3px 0; border: none !important; }
+            td:before { content: attr(data-label); font-size: 8px; font-weight: 900; color: var(--text-dim); text-transform: uppercase; }
+        }
+    </style>
+</head>
+<body class="dark-theme flex flex-col h-screen w-full">
+
+    <div id="toast-container" class="fixed top-4 left-1/2 -translate-x-1/2 z-[300] flex flex-col gap-1.5 pointer-events-none"></div>
+
+    <!-- TELA DE ACESSO -->
+    <div id="authOverlay" class="fixed inset-0 bg-[var(--bg)] z-[150] flex flex-col items-center justify-center p-4">
+        <div class="glass-card p-5 w-full max-w-[250px] flex flex-col items-center gap-4 text-center">
+            <div class="relative">
+                <div class="w-10 h-10 bg-orange-500 rounded flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                </div>
+                <div class="absolute -top-1 -right-1 w-3 h-3 bg-green-500 border-2 border-[var(--card)] rounded-full animate-pulse"></div>
+            </div>
+            
+            <div>
+                <h1 class="text-base font-black tracking-tight">SecureVault</h1>
+                <p id="mainSubtitle" class="text-[7.5px] font-bold text-[var(--text-dim)] tracking-[0.2em] uppercase" data-i18n="appSubtitle">Elite Access Security</p>
+            </div>
+
+            <div class="w-full space-y-2">
+                <input type="password" id="mainPass" class="smart-input w-full text-center py-1.5 tracking-[0.3em]" placeholder="••••••" onkeypress="if(event.key==='Enter') VaultApp.unlock()">
+                <input type="password" id="mainConfirmPass" class="smart-input w-full text-center hidden py-1.5" data-i18n-ph="phConfirmPass" placeholder="REPETIR">
+                <button onclick="VaultApp.unlock()" id="mainAuthBtn" class="btn-smart btn-main w-full py-2.5 text-[8.5px] font-black" data-i18n="btnUnlock">DESBLOQUEAR</button>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 w-full border-t border-[var(--border)] pt-3 mt-1">
+                <button onclick="VaultApp.toggleRecoveryScreen()" class="text-[7.5px] font-black text-[var(--text-dim)] hover:text-[var(--accent)] uppercase" data-i18n="btnForgot">Recuperar</button>
+                <div class="w-1 h-1 bg-[var(--border)] rounded-full"></div>
+                <button onclick="VaultApp.resetSystem()" class="text-[7.5px] font-black text-red-500/40 hover:text-red-500 uppercase" data-i18n="clearAll">Formatar</button>
+            </div>
+            <p id="mainAuthError" class="text-[8.5px] font-bold text-red-500"></p>
+        </div>
+    </div>
+
+    <!-- APP PRINCIPAL -->
+    <div id="appContainer" class="hidden flex-1 flex flex-col h-full w-full overflow-hidden">
+        
+        <header class="glass-card px-4 py-2 flex justify-between items-center z-50 border-t-0 border-x-0">
+            <div class="flex items-center gap-2.5">
+                <div class="bg-orange-500 p-1 rounded">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                </div>
+                <div>
+                    <input type="text" id="titleField" class="bg-transparent border-none text-[13px] font-black outline-none w-40 text-[var(--text)] m-0 p-0" onchange="VaultApp.saveConfig()">
+                    <div class="flex items-center gap-1 mt-0.5">
+                        <div class="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                        <span class="text-[7.5px] font-bold text-[var(--text-dim)] uppercase tracking-tighter" data-i18n="vaultStatus">Proteção Ativa</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mobile-hide flex items-center gap-3 px-3 py-1 bg-black/20 rounded border border-[var(--border)]">
+                <div class="text-center">
+                    <p class="text-[7.5px] font-black text-[var(--text-dim)] uppercase" data-i18n="healthLabel">Saúde</p>
+                    <p id="vaultScore" class="text-xs font-black text-green-500 leading-none mt-0.5">100%</p>
+                </div>
+                <div class="h-4 w-px bg-[var(--border)]"></div>
+                <div class="text-center">
+                    <p class="text-[7.5px] font-black text-[var(--text-dim)] uppercase" data-i18n="weakLabel">Fracas</p>
+                    <p id="weakCount" class="text-xs font-black text-red-500 leading-none mt-0.5">0</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1">
+                <button onclick="VaultApp.toggleLang()" id="langBtn" class="btn-smart bg-[var(--input-bg)] text-[var(--text)]">PT</button>
+                <button onclick="VaultApp.toggleTheme()" id="themeBtn" class="btn-smart bg-[var(--input-bg)] text-[var(--text)]">☀️</button>
+                <button onclick="VaultApp.lock()" class="btn-smart bg-red-600/10 border-red-500/50 text-red-500 hover:bg-red-600 hover:text-white" data-i18n="btnLock">SAIR</button>
+            </div>
+        </header>
+
+        <div class="w-full bg-[var(--bg)] border-b border-[var(--border)] px-4 py-1.5">
+            <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-1.5">
+                <button onclick="VaultApp.openAddModal()" class="btn-smart btn-main" data-i18n="newRecord">+ NOVO</button>
+                <div class="h-3 w-px bg-[var(--border)] mx-1"></div>
+                <div class="flex gap-1.5 mobile-scroll-x">
+                    <button onclick="VaultApp.triggerJSONImport()" class="btn-smart btn-ghost" data-i18n="importJson">📦 JSON</button>
+                    <button onclick="VaultApp.exportJSON()" class="btn-smart btn-ghost" data-i18n="exportJson">📤 BACKUP</button>
+                    <button onclick="VaultApp.triggerCSVImport()" class="btn-smart btn-ghost" data-i18n="importCsv">📄 CSV</button>
+                    <button onclick="VaultApp.exportCSV()" class="btn-smart btn-ghost" data-i18n="exportCsv">📊 CSV</button>
+                </div>
+                <div class="h-3 w-px bg-[var(--border)] mx-1 mobile-hide"></div>
+                <div class="flex gap-1.5">
+                    <button onclick="VaultApp.selectAll()" class="btn-smart btn-outline" data-i18n="selAll">TUDO</button>
+                    <button onclick="VaultApp.deleteSelected()" class="btn-smart border-red-500/50 text-red-500 hover:bg-red-500/10" data-i18n="delSel">ELIMINAR SEL.</button>
+                    <button onclick="VaultApp.deleteAllAccounts()" class="btn-smart border-transparent bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white" data-i18n="clearList">LIMPAR</button>
+                </div>
+                <div class="flex-grow"></div>
+                <div class="flex gap-1.5">
+                    <button onclick="VaultApp.openPasswordModal()" class="btn-smart btn-ghost" data-i18n="btnGen">🔑 GERAR</button>
+                    <button onclick="VaultApp.toggleNotesDrawer()" class="btn-smart btn-ghost" data-i18n="btnNotes">📝 NOTAS</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="px-4 py-1.5 bg-[var(--card)] border-b border-[var(--border)]">
+            <div class="max-w-6xl mx-auto relative">
+                <input type="text" id="searchService" class="smart-input w-full pl-8 py-1.5 text-[11px]" data-i18n-ph="phSearch" placeholder="Pesquisar..." oninput="VaultApp.debouncedSearch()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--text-dim)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+        </div>
+
+        <main class="flex-1 p-3 overflow-hidden">
+            <div class="max-w-6xl mx-auto h-full glass-card rounded overflow-hidden flex flex-col">
+                <div class="flex-1 overflow-auto table-wrapper custom-scrollbar">
+                    <table id="accountsTable" class="w-full text-left border-collapse table-pro">
+                        <thead class="sticky top-0 z-20">
+                            <tr>
+                                <th class="w-8 text-center">#</th>
+                                <th class="w-8 text-center" data-i18n="colIcon">Icon</th>
+                                <th class="cursor-pointer" onclick="VaultApp.handleSort('service')" data-i18n="colService">Serviço</th>
+                                <th class="cursor-pointer" onclick="VaultApp.handleSort('username')" data-i18n="colUser">Utilizador</th>
+                                <th class="w-48 text-center" data-i18n="colPass">Senha</th>
+                                <th class="w-20 text-center" data-i18n="colHealth">Saúde</th>
+                                <th class="w-12 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+                <div id="emptyState" class="hidden flex flex-col items-center justify-center py-16 opacity-20">
+                    <p class="font-black text-xs uppercase tracking-widest" data-i18n="emptyMsg">Sem registos</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="glass-card p-1.5 px-4 flex justify-between items-center z-40 border-b-0 border-x-0">
+            <span class="text-[8px] font-black text-[var(--text-dim)] uppercase tracking-wider">
+                <span data-i18n="totalLabel">Total:</span> <span id="statsCount" class="text-[var(--accent)] ml-1">0</span>
+            </span>
+            <div id="sessionTimer" class="text-[9px] font-mono font-bold text-[var(--text-dim)]">05:00</div>
+        </footer>
+    </div>
+
+    <!-- MODAL ADICIONAR -->
+    <div id="addAccountModal" class="hidden fixed inset-0 bg-black/90 z-[200] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="glass-card p-5 w-full max-w-[260px] flex flex-col gap-3.5 shadow-2xl">
+            <h2 class="text-[13px] font-black uppercase" data-i18n="modalAddTitle">Nova Credencial</h2>
+            <div class="space-y-2 text-left">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="space-y-1">
+                        <label class="text-[7px] font-black uppercase opacity-50 ml-1">Serviço</label>
+                        <input type="text" id="newAccService" class="smart-input w-full py-1" data-i18n-ph="phService" placeholder="Serviço">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[7px] font-black uppercase opacity-50 ml-1">Categoria</label>
+                        <select id="newAccCat" class="smart-input w-full py-1 bg-[var(--input-bg)]"></select>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[7px] font-black uppercase opacity-50 ml-1">Usuário</label>
+                    <input type="text" id="newAccUser" class="smart-input w-full py-1" data-i18n-ph="phUser" placeholder="Utilizador">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[7px] font-black uppercase opacity-50 ml-1">Senha</label>
+                    <div class="relative">
+                        <input type="password" id="newAccPass" class="smart-input w-full py-1 pr-8 tech-data" data-i18n-ph="phPass" placeholder="Senha" oninput="VaultApp.updatePassStrength(this.value, 'newStrengthBar')">
+                        <button onclick="VaultApp.toggleInputType('newAccPass')" class="absolute right-2 top-1/2 -translate-y-1/2 text-sm">👁️</button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="flex-1 h-1 bg-[var(--border)] rounded-full overflow-hidden opacity-30">
+                        <div id="newStrengthBar" class="h-full w-0 transition-all duration-500"></div>
+                    </div>
+                    <span id="strengthText" class="text-[7px] font-black uppercase text-red-500">---</span>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="VaultApp.closeAddModal()" class="btn-smart btn-outline flex-1 py-1.5" data-i18n="btnCancel">SAIR</button>
+                <button onclick="VaultApp.confirmAddAccount()" class="btn-smart btn-main flex-1 py-1.5" data-i18n="btnSave">GUARDAR</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DRAWER NOTAS -->
+    <div id="drawerBackdrop" class="hidden fixed inset-0 bg-black/70 z-[100] backdrop-blur-sm" onclick="VaultApp.toggleNotesDrawer()"></div>
+    <div id="notesDrawer" class="fixed right-0 top-0 h-full w-full max-w-[280px] bg-[var(--card)] z-[110] transition-transform duration-500 translate-x-full flex flex-col shadow-2xl">
+        <div class="p-3 border-b border-[var(--border)] flex justify-between items-center bg-[var(--bg)]">
+            <h3 class="font-black text-[12px] uppercase text-[var(--accent)]" data-i18n="notesVault">Notas</h3>
+            <button onclick="VaultApp.toggleNotesDrawer()" class="p-1 font-bold text-base hover:text-white">✕</button>
+        </div>
+        <div class="p-3 flex flex-col gap-2.5 overflow-hidden h-full">
+            <button onclick="VaultApp.createNewNote()" class="btn-smart btn-outline w-full py-1.5 border-[var(--accent-aux)] text-[var(--accent-aux)]" data-i18n="newNote">+ NOTA</button>
+            <div id="snListContainer" class="flex-1 overflow-y-auto space-y-1.5"></div>
+            <div id="noteEditor" class="hidden flex flex-col gap-2 pt-2.5 border-t border-[var(--border)]">
+                <input type="text" id="snNoteTitle" class="smart-input w-full font-black text-[11px] py-1" placeholder="Título" oninput="VaultApp.scheduleAutoSave()">
+                <textarea id="snNoteContent" class="smart-input w-full h-40 resize-none text-[10px] text-left tech-data py-1.5" placeholder="Conteúdo..." oninput="VaultApp.scheduleAutoSave()"></textarea>
+                <div class="flex justify-between items-center px-1">
+                    <span id="snSaveStatus" class="text-[7px] font-black text-green-500 uppercase opacity-0 transition-opacity" data-i18n="msgSavedNote">Salvo</span>
+                    <button onclick="VaultApp.deleteCurrentNote()" class="text-red-500 font-black text-[7.5px] uppercase hover:underline" data-i18n="btnDelete">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL GERADOR -->
+    <div id="passwordModal" class="hidden fixed inset-0 bg-black/80 z-[200] flex items-center justify-center p-4">
+        <div class="glass-card p-5 w-full max-w-[260px] flex flex-col gap-3.5 text-center shadow-2xl">
+            <h2 class="text-[11px] font-black uppercase italic" data-i18n="modalGenTitle">Gerador</h2>
+            <input type="text" id="genPassField" readonly class="smart-input w-full text-sm tech-data text-[var(--accent)] bg-black/40 border-none py-2 text-center">
+            <div class="flex gap-2">
+                <button onclick="VaultApp.generateSecurePassword()" class="btn-smart btn-outline flex-1 py-1.5" data-i18n="btnRegen">NOVA</button>
+                <button onclick="VaultApp.copyValue(document.getElementById('genPassField').value)" class="btn-smart btn-main flex-1 py-1.5" data-i18n="btnCopy">COPIAR</button>
+            </div>
+            <button onclick="VaultApp.closePasswordModal()" class="btn-smart text-[var(--text-dim)] uppercase text-[7.5px] border-none shadow-none bg-transparent">Fechar</button>
+        </div>
+    </div>
+
+    <!-- MODAL SISTEMA (CONFIRMAÇÃO E AVISOS) -->
+    <div id="customModal" class="hidden fixed inset-0 bg-black/95 z-[250] flex items-center justify-center backdrop-blur-md p-4">
+        <div class="glass-card p-6 w-full max-w-[260px] flex flex-col items-center gap-3.5 text-center shadow-2xl">
+            <h3 id="modalTitle" class="text-[var(--text)] font-black text-[13px] uppercase">AVISO</h3>
+            <p id="modalMessage" class="text-[var(--text-dim)] text-[10px] leading-relaxed"></p>
+            <div id="modalActions" class="w-full flex flex-col gap-1.5 mt-1"></div>
+        </div>
+    </div>
+
+    <input type="file" id="jsonFileInput" class="hidden" accept=".json" onchange="VaultApp.importJSON(event)">
+    <input type="file" id="csvFileInput" class="hidden" accept=".csv,.txt" onchange="VaultApp.importCSV(event)">
+
+    <script>
+        (function(){
+            const escapeHtml = (t) => { if(!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+            const generateUUID = () => crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).substring(2, 9);
+
+            const i18n = {
+                pt: {
+                    appSubtitle: "Segurança de Elite", phConfirmPass: "Repetir Chave", btnUnlock: "ENTRAR", btnForgot: "Recuperar",
+                    clearAll: "Formatar", vaultStatus: "Proteção Ativa", healthLabel: "Saúde", weakLabel: "Fracas", btnLock: "SAIR",
+                    newRecord: "+ NOVO", importJson: "📦 JSON", exportJson: "📤 BACKUP", importCsv: "📄 CSV", exportCsv: "📊 CSV",
+                    selAll: "TUDO", delSel: "ELIMINAR SEL.", clearList: "LIMPAR", btnGen: "🔑 GERAR", btnNotes: "📝 NOTAS", phSearch: "Pesquisar...",
+                    colIcon: "Icon", colService: "Serviço", colUser: "Utilizador", colPass: "Senha", colHealth: "Saúde", 
+                    emptyMsg: "Cofre Vazio", totalLabel: "Total:", modalAddTitle: "Nova Credencial", phService: "Serviço",
+                    phUser: "Utilizador", phPass: "Senha", btnCancel: "SAIR", btnSave: "GUARDAR", notesVault: "Notas",
+                    newNote: "+ NOVA NOTA", msgSavedNote: "Salvo", btnDelete: "Eliminar", modalGenTitle: "Gerador", btnRegen: "NOVA", btnCopy: "COPIAR",
+                    createVault: "CRIAR COFRE", createVaultSub: "Defina sua chave mestra.", msgRecCodeTitle: "CÓDIGO ÚNICO",
+                    msgRecCodeAlert: "SALVE ISTO AGORA! É irreperável:\n\n{0}", msgUnlocked: "Cofre Aberto", msgLocked: "Trancado",
+                    msgImportSuccess: "{0} itens importados!", csvHeader: "SERVICO;UTILIZADOR;SENHA;CATEGORIA;DATA", strengthWeak: "Fraca", strengthMid: "Média", strengthStrong: "Forte"
+                },
+                en: {
+                    appSubtitle: "Elite Security", phConfirmPass: "Repeat Key", btnUnlock: "LOGIN", btnForgot: "Forgot",
+                    clearAll: "Wipe", vaultStatus: "Active Protection", healthLabel: "Health", weakLabel: "Weak", btnLock: "EXIT",
+                    newRecord: "+ NEW", importJson: "📦 JSON", exportJson: "📤 BACKUP", importCsv: "📄 CSV", exportCsv: "📊 CSV",
+                    selAll: "ALL", delSel: "DELETE SEL.", clearList: "CLEAR", btnGen: "🔑 GEN", btnNotes: "📝 NOTES", phSearch: "Search...",
+                    colIcon: "Icon", colService: "Service", colUser: "User", colPass: "Pass", colHealth: "Health", 
+                    emptyMsg: "Vault Empty", totalLabel: "Total:", modalAddTitle: "New Entry", phService: "Service",
+                    phUser: "User", phPass: "Password", btnCancel: "EXIT", btnSave: "SAVE", notesVault: "Notes",
+                    newNote: "+ NEW NOTE", msgSavedNote: "Saved", btnDelete: "Delete", modalGenTitle: "Generator", btnRegen: "NEW", btnCopy: "COPY",
+                    createVault: "CREATE VAULT", createVaultSub: "Set your master key.", msgRecCodeTitle: "RECOVERY KEY",
+                    msgRecCodeAlert: "SAVE THIS NOW! It is unique:\n\n{0}", msgUnlocked: "Access Granted", msgLocked: "Vault Locked",
+                    msgImportSuccess: "{0} items imported!", csvHeader: "SERVICE;USER;PASSWORD;CATEGORY;DATE", strengthWeak: "Weak", strengthMid: "Medium", strengthStrong: "Strong"
+                }
+            };
+
+            const CONFIG = { INACTIVITY_LIMIT: 5 * 60 * 1000, CATEGORIES: ['Geral', 'Pessoal', 'Trabalho', 'Finanças', 'Educação', 'Social'], STORAGE_KEY: 'sa_vault_v21_Final' };
+
+            const state = {
+                lang: 'pt', theme: 'dark', accounts: [], notes: [], currentNote: null, masterKey: null,
+                selectedIds: new Set(), appData: { meta: null, accountsEncrypted: "", notes: [] },
+                sortCol: 'service', sortAsc: true, inactivityTimer: null, sessionStart: null, searchTimeout: null
+            };
+
+            const methods = {
+                init: () => {
+                    state.lang = localStorage.getItem('sa_lang') || 'pt';
+                    if(localStorage.getItem('sa_theme') === 'light') methods.toggleTheme();
+                    const raw = localStorage.getItem(CONFIG.STORAGE_KEY);
+                    if(raw) try { state.appData = JSON.parse(raw); } catch(e) { }
+                    methods.showAuthScreen(!state.appData.meta); 
+                    methods.updateUI();
+                    
+                    document.getElementById('tableBody').addEventListener('click', (e) => {
+                        const tr = e.target.closest('tr');
+                        if (!tr) return;
+                        const id = tr.getAttribute('data-id');
+                        if (['INPUT', 'BUTTON', 'SPAN'].includes(e.target.tagName)) return;
+                        if (state.selectedIds.has(id)) state.selectedIds.delete(id);
+                        else state.selectedIds.add(id);
+                        tr.classList.toggle('selected');
+                        document.getElementById('statsCount').innerText = state.accounts.length;
+                    });
+                },
+
+                updateUI: () => {
+                    const d = i18n[state.lang];
+                    document.querySelectorAll('[data-i18n]').forEach(el => {
+                        const key = el.getAttribute('data-i18n');
+                        if(d[key]) el.innerText = d[key];
+                    });
+                    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+                        const key = el.getAttribute('data-i18n-ph');
+                        if(d[key]) el.placeholder = d[key];
+                    });
+                    document.getElementById('langBtn').innerText = state.lang.toUpperCase();
+                    document.getElementById('newAccCat').innerHTML = CONFIG.CATEGORIES.map(c => `<option value="${c}">${c}</option>`).join('');
+                    const tf = document.getElementById('titleField');
+                    if(tf) tf.value = localStorage.getItem('sa_title') || (state.lang === 'pt' ? "SecureVault Elite" : "SecureVault Pro");
+                    methods.renderTable(); 
+                    methods.renderNotesList();
+                },
+
+                showAuthScreen: (isNew) => {
+                    const d = i18n[state.lang];
+                    document.getElementById('mainConfirmPass').classList.toggle('hidden', !isNew);
+                    document.getElementById('mainAuthBtn').innerText = isNew ? d.createVault : d.btnUnlock;
+                    document.getElementById('mainSubtitle').innerText = isNew ? d.createVaultSub : d.appSubtitle;
+                },
+
+                unlock: () => {
+                    const passInput = document.getElementById('mainPass');
+                    const pass = passInput.value;
+                    const confirmPass = document.getElementById('mainConfirmPass').value;
+                    const err = document.getElementById('mainAuthError');
+                    const d = i18n[state.lang];
+                    err.innerText = '';
+                    try {
+                        if(!state.appData.meta) {
+                            if(pass.length < 6) throw new Error("Min 6 chars");
+                            if(pass !== confirmPass) throw new Error(state.lang === 'pt' ? "Diferentes" : "Mismatch");
+                            const mk = CryptoJS.lib.WordArray.random(32).toString();
+                            const rec = CryptoJS.lib.WordArray.random(8).toString().toUpperCase().match(/.{4}/g).join('-');
+                            state.appData.meta = { emk: CryptoJS.AES.encrypt(mk, pass).toString(), remk: CryptoJS.AES.encrypt(mk, rec).toString() };
+                            state.appData.accountsEncrypted = CryptoJS.AES.encrypt("[]", mk).toString();
+                            state.masterKey = mk; 
+                            localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.appData));
+                            methods.showSystemModal(d.msgRecCodeTitle, d.msgRecCodeAlert.replace('{0}', rec), rec);
+                        } else {
+                            const mk = CryptoJS.AES.decrypt(state.appData.meta.emk, pass).toString(CryptoJS.enc.Utf8);
+                            if(!mk) throw new Error(state.lang === 'pt' ? "Incorreta" : "Wrong Key");
+                            state.masterKey = mk;
+                            const dec = CryptoJS.AES.decrypt(state.appData.accountsEncrypted, mk).toString(CryptoJS.enc.Utf8);
+                            state.accounts = dec ? JSON.parse(dec) : [];
+                        }
+                        document.getElementById('authOverlay').classList.add('hidden');
+                        document.getElementById('appContainer').classList.remove('hidden');
+                        methods.loadNotes(); methods.startInactivityTimer(); methods.renderTable();
+                        toast(d.msgUnlocked); passInput.value = '';
+                    } catch(e) { err.innerText = e.message; }
+                },
+
+                startInactivityTimer: () => {
+                    clearTimeout(state.inactivityTimer); state.sessionStart = Date.now();
+                    const tick = () => {
+                        const r = Math.max(0, CONFIG.INACTIVITY_LIMIT - (Date.now() - state.sessionStart));
+                        const el = document.getElementById('sessionTimer');
+                        if(el) el.innerText = `${Math.floor(r/60000)}:${Math.floor((r%60000)/1000).toString().padStart(2,'0')}`;
+                        if(r <= 0) methods.lock(); else if(state.masterKey) requestAnimationFrame(tick);
+                    };
+                    tick();
+                },
+
+                renderTable: () => {
+                    const tb = document.getElementById('tableBody');
+                    const empty = document.getElementById('emptyState');
+                    const search = (document.getElementById('searchService')?.value || "").toLowerCase();
+                    const filtered = state.accounts.filter(a => (a.service+a.username+(a.category||'')).toLowerCase().includes(search));
+                    const d = i18n[state.lang];
+                    
+                    if (filtered.length === 0) {
+                        tb.innerHTML = '';
+                        empty.classList.remove('hidden');
+                        document.getElementById('statsCount').innerText = '0';
+                        return;
+                    }
+                    empty.classList.add('hidden');
+
+                    let totalS = 0; let weak = 0;
+                    let html = '';
+                    
+                    filtered.forEach((a, idx) => {
+                        const s = methods.getStrength(a.password);
+                        totalS += s; if(s < 3) weak++;
+                        const isSelected = state.selectedIds.has(a.id) ? 'selected' : '';
+                        
+                        html += `
+                            <tr class="group ${isSelected}" data-id="${a.id}">
+                                <td class="text-center font-black text-[var(--border)] text-[8.5px]">${idx+1}</td>
+                                <td class="text-center text-[15px]" data-label="${d.colIcon}">${methods.getServiceIcon(a.service)}</td>
+                                <td class="font-bold" data-label="${d.colService}"><span contenteditable="true" onblur="VaultApp.updateField('${a.id}','service',this.innerText)">${escapeHtml(a.service)}</span></td>
+                                <td class="text-[9.5px] font-medium text-[var(--text-dim)]" data-label="${d.colUser}"><span contenteditable="true" onblur="VaultApp.updateField('${a.id}','username',this.innerText)">${escapeHtml(a.username)}</span></td>
+                                <td data-label="${d.colPass}">
+                                    <div class="pass-container flex items-center gap-1.5">
+                                        <input type="password" id="p-${a.id}" value="${escapeHtml(a.password)}" class="bg-transparent border-none outline-none tech-data w-full text-[var(--text)] text-center" onblur="VaultApp.updateField('${a.id}','password',this.value)">
+                                        <button onclick="VaultApp.toggleInputType('p-${a.id}')" class="px-1 opacity-30 hover:opacity-100 text-sm">👁️</button>
+                                        <button onclick="VaultApp.copyValue(document.getElementById('p-${a.id}').value)" class="text-[var(--accent)] px-1 opacity-40 hover:opacity-100 text-sm">📋</button>
+                                    </div>
+                                </td>
+                                <td class="text-center" data-label="${d.colHealth}">
+                                    <div class="strength-bar mx-auto"><div class="h-full ${s<2?'bg-red-500':s<4?'bg-orange-500':'bg-green-500'}" style="width: ${s*25}%"></div></div>
+                                </td>
+                                <td class="text-center">
+                                    <button onclick="VaultApp.deleteAccount('${a.id}')" class="text-red-500/30 hover:text-red-500 font-bold transition-colors">🗑️</button>
+                                </td>
+                            </tr>`;
+                    });
+                    
+                    tb.innerHTML = html;
+                    const score = state.accounts.length ? Math.round((totalS / (state.accounts.length * 4)) * 100) : 100;
+                    document.getElementById('vaultScore').innerText = score + '%';
+                    document.getElementById('weakCount').innerText = weak;
+                    document.getElementById('statsCount').innerText = state.accounts.length;
+                },
+
+                getServiceIcon: (n) => {
+                    n = (n||"").toLowerCase();
+                    if (n.includes('google') || n.includes('gmail')) return '🌐';
+                    if (n.includes('face') || n.includes('insta')) return '👥';
+                    if (n.includes('bank') || n.includes('nu') || n.includes('inter') || n.includes('fin')) return '💰';
+                    if (n.includes('net') || n.includes('prime')) return '🎬';
+                    if (n.includes('git') || n.includes('code')) return '💻';
+                    if (n.includes('micro') || n.includes('live')) return '📧';
+                    return '🔑';
+                },
+                getStrength: (p) => { let s=0; if(!p) return 0; if(p.length>8) s++; if(/[A-Z]/.test(p)) s++; if(/[0-9]/.test(p)) s++; if(/[^A-Za-z0-9]/.test(p)) s++; return s; },
+                updateField: (id, f, v) => { const a = state.accounts.find(x => x.id === id); if(a && a[f] !== v.trim()) { a[f] = v.trim(); methods.saveData(); methods.renderTable(); } },
+                saveData: () => { if(!state.masterKey) return; clearTimeout(window.saveTimer); window.saveTimer = setTimeout(() => { state.appData.accountsEncrypted = CryptoJS.AES.encrypt(JSON.stringify(state.accounts), state.masterKey).toString(); localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.appData)); }, 800); },
+                
+                selectAll: () => { state.accounts.forEach(a => state.selectedIds.add(a.id)); methods.renderTable(); },
+                
+                deleteSelected: () => { 
+                    if(!state.selectedIds.size) return; 
+                    methods.showConfirmModal("Atenção", state.lang === 'pt' ? `Eliminar ${state.selectedIds.size} itens?` : `Delete ${state.selectedIds.size} items?`, () => { 
+                        state.accounts = state.accounts.filter(a => !state.selectedIds.has(a.id)); 
+                        state.selectedIds.clear(); 
+                        methods.saveData(); methods.renderTable(); 
+                        toast(state.lang === 'pt' ? "Eliminado" : "Deleted", "danger"); 
+                    }); 
+                },
+                deleteAllAccounts: () => { 
+                    methods.showConfirmModal("PERIGO", state.lang === 'pt' ? "Eliminar TUDO?" : "Delete ALL?", () => { 
+                        state.accounts = []; state.selectedIds.clear(); 
+                        methods.saveData(); methods.renderTable(); 
+                        toast(state.lang === 'pt' ? "Cofre Limpo" : "Vault Cleared", "danger"); 
+                    }); 
+                },
+                deleteAccount: (id) => { 
+                    methods.showConfirmModal("Atenção", state.lang === 'pt' ? "Eliminar credencial?" : "Delete item?", () => { 
+                        state.accounts = state.accounts.filter(a => a.id !== id); 
+                        methods.saveData(); methods.renderTable(); 
+                        toast(state.lang === 'pt' ? "Eliminado" : "Deleted", "danger"); 
+                    }); 
+                },
+                
+                triggerJSONImport: () => document.getElementById('jsonFileInput').click(),
+                triggerCSVImport: () => document.getElementById('csvFileInput').click(),
+                
+                exportJSON: () => { const b = { v: 22, accounts: state.accounts, notes: state.appData.notes, date: new Date().toISOString() }; const blob = new Blob([JSON.stringify(b, null, 2)], {type: 'application/json'}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `Vault_Backup.json`; a.click(); },
+                
+                importJSON: (e) => {
+                    const input = e.target;
+                    const f = input.files[0]; if(!f) return;
+                    const r = new FileReader(); 
+                    r.onload = (ev) => {
+                        try {
+                            const d = JSON.parse(ev.target.result);
+                            const list = Array.isArray(d) ? d : (d.accounts || []);
+                            const imp = list.map(it => {
+                                const get = (p) => { const k = Object.keys(it).find(x => p.some(z => x.toLowerCase().includes(z))); return k ? it[k] : null; };
+                                return { id: generateUUID(), service: get(['servic', 'site', 'app', 'nome']) || '?', username: get(['user', 'email', 'usuario', 'utilizador']) || '-', password: get(['senha', 'pass', 'key']) || '', category: it.category || 'Geral', lastUpdate: new Date().toISOString() };
+                            });
+                            
+                            state.accounts = [...state.accounts, ...imp];
+                            
+                            if (d.notes && Array.isArray(d.notes)) {
+                                if(!state.appData.notes) state.appData.notes = [];
+                                d.notes.forEach(n => {
+                                    if(n.title || n.content) {
+                                        if (n.payload) { state.appData.notes.push(n); }
+                                    }
+                                });
+                            }
+                            
+                            methods.saveData(); methods.renderTable(); methods.loadNotes();
+                            toast(i18n[state.lang].msgImportSuccess.replace('{0}', imp.length));
+                        } catch(err) { toast("Erro JSON", "danger"); }
+                        input.value = '';
+                    }; 
+                    r.readAsText(f); 
+                },
+
+                exportCSV: () => { let csv = i18n[state.lang].csvHeader + '\n'; state.accounts.forEach(a => { csv += `"${a.service}";"${a.username}";"${a.password}";"${a.category}";"${new Date().toLocaleDateString()}"\n`; }); const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csv], {type: 'text/csv'}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `Vault_Export.csv`; a.click(); },
+                
+                importCSV: (e) => {
+                    const input = e.target;
+                    const f = input.files[0]; if(!f) return;
+                    Papa.parse(f, { header: true, complete: (res) => {
+                        const imp = res.data.map(r => {
+                            const get = (p) => { const k = Object.keys(r).find(x => p.some(z => x.toLowerCase().includes(z))); return k ? r[k] : null; };
+                            return { id: generateUUID(), service: get(['servic', 'service', 'site']) || Object.values(r)[0], username: get(['user', 'email', 'login', 'utilizador']) || '-', password: get(['senha', 'pass', 'password']) || '', category: 'Geral', lastUpdate: new Date().toISOString() };
+                        }).filter(a => a.service);
+                        state.accounts = [...state.accounts, ...imp]; methods.saveData(); methods.renderTable();
+                        toast(imp.length + " Importados");
+                        input.value = '';
+                    }}); 
+                },
+
+                openPasswordModal: () => { document.getElementById('passwordModal').classList.remove('hidden'); methods.generateSecurePassword(); },
+                closePasswordModal: () => document.getElementById('passwordModal').classList.add('hidden'),
+                generateSecurePassword: () => { const c = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789!@#$%^&*()_+"; let p = ""; for(let i=0; i<20; i++) p += c.charAt(Math.floor(Math.random() * c.length)); document.getElementById('genPassField').value = p; },
+                
+                toggleNotesDrawer: () => { const d = document.getElementById('notesDrawer'); const isOpen = !d.classList.contains('translate-x-full'); d.classList.toggle('translate-x-full', isOpen); document.getElementById('drawerBackdrop').classList.toggle('hidden', isOpen); },
+                loadNotes: () => { if (!state.masterKey) return; const vn = []; (state.appData.notes || []).forEach(e => { const d = CryptoJS.AES.decrypt(e.payload, state.masterKey).toString(CryptoJS.enc.Utf8); if(d) { const p = d.split('|||V|||'); vn.push({ id: e.id, title: p[0], content: p[1] }); } }); state.notes = vn; methods.renderNotesList(); },
+                renderNotesList: () => { const ct = document.getElementById('snListContainer'); if(!ct) return; ct.innerHTML = state.notes.map(n => `<div onclick="VaultApp.openNote('${n.id}')" class="p-2 rounded-[4px] cursor-pointer bg-[var(--input-bg)] border border-[var(--border)] hover:border-[var(--accent-aux)] transition-all ${state.currentNote?.id === n.id ? 'border-[var(--accent-aux)]' : ''}"><div class="font-black text-[9px] truncate uppercase">${escapeHtml(n.title) || 'Sem Título'}</div></div>`).join(''); },
+                openNote: (id) => { state.currentNote = state.notes.find(n => n.id === id); document.getElementById('noteEditor').classList.remove('hidden'); document.getElementById('snNoteTitle').value = state.currentNote.title; document.getElementById('snNoteContent').value = state.currentNote.content; methods.renderNotesList(); },
+                createNewNote: () => { const n = { id: generateUUID(), title: 'Nova Nota', content: '' }; state.notes.push(n); methods.openNote(n.id); },
+                scheduleAutoSave: () => { const s = document.getElementById('snSaveStatus'); s.style.opacity = '1'; clearTimeout(window.aST); window.aST = setTimeout(() => { methods.saveCurrentNote(); s.style.opacity = '0'; }, 800); },
+                saveCurrentNote: () => { if(!state.currentNote || !state.masterKey) return; state.currentNote.title = document.getElementById('snNoteTitle').value; state.currentNote.content = document.getElementById('snNoteContent').value; const enc = CryptoJS.AES.encrypt(`${state.currentNote.title}|||V|||${state.currentNote.content}`, state.masterKey).toString(); if(!state.appData.notes) state.appData.notes = []; const i = state.appData.notes.findIndex(x => x.id === state.currentNote.id); if(i > -1) state.appData.notes[i].payload = enc; else state.appData.notes.push({ id: state.currentNote.id, payload: enc }); localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.appData)); methods.renderNotesList(); },
+                deleteCurrentNote: () => { if(!state.currentNote) return; methods.showConfirmModal("Atenção", state.lang === 'pt' ? "Eliminar esta nota?" : "Delete note?", () => { state.appData.notes = (state.appData.notes || []).filter(n => n.id !== state.currentNote.id); state.notes = state.notes.filter(n => n.id !== state.currentNote.id); state.currentNote = null; document.getElementById('noteEditor').classList.add('hidden'); localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state.appData)); methods.renderNotesList(); toast(state.lang === 'pt' ? "Nota Eliminada" : "Note Deleted", "danger"); }); },
+                
+                updatePassStrength: (p, barId) => { const s = methods.getStrength(p); const bar = document.getElementById(barId); const text = document.getElementById('strengthText'); const d = i18n[state.lang]; if(bar) bar.style.width = (s * 25) + '%'; if(bar) bar.className = `h-full transition-all ${s < 2 ? 'bg-red-500' : s < 4 ? 'bg-orange-500' : 'bg-green-500'}`; if(text) { text.innerText = s < 2 ? d.strengthWeak : s < 4 ? d.strengthMid : d.strengthStrong; text.className = `text-[7px] font-black uppercase ${s < 2 ? 'text-red-500' : s < 4 ? 'text-orange-500' : 'text-green-500'}`; } },
+                openAddModal: () => document.getElementById('addAccountModal').classList.remove('hidden'),
+                closeAddModal: () => document.getElementById('addAccountModal').classList.add('hidden'),
+                confirmAddAccount: () => { const s = document.getElementById('newAccService').value; if(!s) return toast("Obrigatório", "danger"); state.accounts.push({ id: generateUUID(), service: s, username: document.getElementById('newAccUser').value || '-', password: document.getElementById('newAccPass').value, category: document.getElementById('newAccCat').value, lastUpdate: new Date().toISOString() }); methods.saveData(); methods.renderTable(); methods.closeAddModal(); },
+                toggleLang: () => { state.lang = state.lang === 'pt' ? 'en' : 'pt'; localStorage.setItem('sa_lang', state.lang); methods.showAuthScreen(!state.appData.meta); methods.updateUI(); },
+                toggleTheme: () => { const isL = document.body.classList.toggle('light-theme'); localStorage.setItem('sa_theme', isL ? 'light' : 'dark'); document.getElementById('themeBtn').innerText = isL ? '🌙' : '☀️'; },
+                toggleRecoveryScreen: () => { const btn = document.getElementById('mainAuthBtn'); const isRec = btn.innerText.includes('REDEFINIR') || btn.innerText.includes('RESET'); const d = i18n[state.lang]; btn.innerText = isRec ? d.btnUnlock : (state.lang === 'pt' ? 'REDEFINIR' : 'RESET'); document.getElementById('mainSubtitle').innerText = isRec ? d.appSubtitle : (state.lang === 'pt' ? 'INSIRA O CÓDIGO' : 'ENTER CODE'); },
+                handleSort: (col) => { if (state.sortCol === col) state.sortAsc = !state.sortAsc; else { state.sortCol = col; state.sortAsc = true; } state.accounts.sort((a,b) => (a[col] || "").toLowerCase().localeCompare((b[col] || "").toLowerCase()) * (state.sortAsc ? 1 : -1)); methods.renderTable(); },
+                toggleInputType: (id) => { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; },
+                
+                copyValue: (v) => { 
+                    if (navigator.clipboard && window.isSecureContext) {
+                        navigator.clipboard.writeText(v).then(() => toast(state.lang === 'pt' ? "Copiado" : "Copied")).catch(() => methods.fallbackCopy(v));
+                    } else {
+                        methods.fallbackCopy(v);
+                    }
+                },
+                fallbackCopy: (v) => {
+                    const t = document.createElement('textarea'); 
+                    t.value = v; t.style.position = 'fixed'; t.style.opacity = '0';
+                    document.body.appendChild(t); t.focus(); t.select(); 
+                    try { document.execCommand('copy'); toast(state.lang === 'pt' ? "Copiado" : "Copied"); } 
+                    catch(e) { toast("Erro Copy", "danger"); }
+                    document.body.removeChild(t); 
+                },
+
+                debouncedSearch: () => { clearTimeout(state.searchTimeout); state.searchTimeout = setTimeout(() => methods.renderTable(), 80); },
+                
+                showSystemModal: (t, m, c = null) => { 
+                    const md = document.getElementById('customModal'); document.getElementById('modalTitle').innerText = t; document.getElementById('modalMessage').innerText = m; 
+                    const actions = document.getElementById('modalActions'); 
+                    actions.innerHTML = c ? `<button onclick=\"VaultApp.copyValue('${c}')\" class=\"btn-smart btn-main w-full\">COPIAR</button><button onclick=\"document.getElementById('customModal').classList.add('hidden')\" class=\"btn-smart bg-[var(--input-bg)] text-[var(--text)] w-full\">OK</button>` : `<button onclick=\"document.getElementById('customModal').classList.add('hidden')\" class=\"btn-smart btn-main w-full\">OK</button>`; 
+                    md.classList.remove('hidden'); 
+                },
+                
+                showConfirmModal: (t, m, cb) => { 
+                    const md = document.getElementById('customModal'); 
+                    document.getElementById('modalTitle').innerText = t; 
+                    document.getElementById('modalMessage').innerText = m; 
+                    const actions = document.getElementById('modalActions'); 
+                    actions.innerHTML = `<button id="btnConfirmAction" class="btn-smart border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full mb-1.5">CONFIRMAR</button><button onclick="document.getElementById('customModal').classList.add('hidden')" class="btn-smart btn-outline w-full">CANCELAR</button>`; 
+                    document.getElementById('btnConfirmAction').onclick = () => { cb(); md.classList.add('hidden'); }; 
+                    md.classList.remove('hidden'); 
+                },
+
+                saveConfig: () => { localStorage.setItem('sa_title', document.getElementById('titleField').value); },
+                lock: () => { location.reload(); },
+                resetSystem: () => { methods.showConfirmModal("PERIGO", state.lang === 'pt' ? "Formatar cofre? Isso apagará tudo!" : "Wipe vault completely?", () => { localStorage.clear(); location.reload(); }); }
+            };
+            
+            function toast(m, t='success') { const e = document.createElement('div'); e.className = `p-2.5 px-6 rounded-[4px] text-white font-black text-[9px] shadow-xl transition-all duration-300 border-l-4 ${t==='success'?'border-green-500 bg-[var(--input-bg)]':'border-red-500 bg-[var(--input-bg)]'}`; e.innerText = m.toUpperCase(); document.getElementById('toast-container').appendChild(e); setTimeout(() => { e.style.opacity = '0'; setTimeout(() => e.remove(), 400); }, 2000); }
+            
+            window.VaultApp = methods;
+            ['mousemove', 'touchstart', 'keypress'].forEach(n => document.addEventListener(n, () => { if(state.masterKey) methods.startInactivityTimer(); }, {passive: true}));
+            window.onload = () => methods.init();
+        })();
+    </script>
+</body>
+</html>
